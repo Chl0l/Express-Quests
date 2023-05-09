@@ -52,6 +52,8 @@ const postUser = (req, res) => {
     });
 };
 
+// Créez une route PUT pour le chemin /api/users/:id : ta route modifiera un utilisateur dans la base de données
+
 const updateUser = (req, res) => {
   const id = parseInt(req.params.id);
   const { firstname, lastname, email, city, language } = req.body;
@@ -73,9 +75,30 @@ const updateUser = (req, res) => {
     });
 };
 
+// Crée une route DELETE pour le chemin /api/users/:id qui va supprimer un utilisateur dans la base de données
+
+const deleteUser = (req, res) => {
+  const id = parseInt(req.params.id);
+
+  database
+    .query("delete from users where id = ?", [id])
+    .then(([result]) => {
+      if (result.affectedRows === 0) {
+        res.status(404).send("Not Found");
+      } else {
+        res.sendStatus(204);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error deleting the user");
+    });
+};
+
   module.exports = {
     getUsers,
     getUserById,
     postUser,
     updateUser,
+    deleteUser,
   };
