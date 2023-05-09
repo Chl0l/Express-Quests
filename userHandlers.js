@@ -2,17 +2,58 @@ const database = require("./database");
 
 // Créer une route GET /api/users, cette route doit renvoyer un statut 200 et une liste d'utilisateurs de la base de données au format json
 
+// const getUsers = (req, res) => {
+//     database
+//     .query("select * from users")
+//     .then(([users]) => {
+//       res.json(users);
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       res.status(200)
+//     })
+//   }
+
+// Ajoute deux filtres pour la route GET /api/users existant :
+// si un paramètre language est fourni dans l'URL (?language=English), ne renvoie que les locuteurs de cette langue.
+// si un paramètre city est fourni dans l'URL (?city=Paris), ne renvoie que les utilisateurs dont la ville correspond au paramètre.
+
 const getUsers = (req, res) => {
-    database
-    .query("select * from users")
-    .then(([users]) => {
-      res.json(users);
+  const initialSql = "select * from users";
+  const where = [];
+
+  if (req.query.language != null) {
+    where.push({
+      column: "language",
+      value: req.query.language,
+      operator: "=",
+    });
+  }
+  if (req.query.city != null) {
+    where.push({
+      column: "city",
+      value: req.query.city,
+      operator: "=",
+    });
+  }
+
+  database
+    .query(
+      where.reduce(
+        (sql, { column, operator }, index) =>
+          `${sql} ${index === 0 ? "where" : "and"} ${column} ${operator} ?`,
+        initialSql
+      ),
+      where.map(({ value }) => value)
+    )
+    .then(([movies]) => {
+      res.json(movies);
     })
     .catch((err) => {
-      console.log(err);
-      res.status(200)
-    })
-  }
+      console.error(err);
+      res.status(500).send("Error retrieving data from database");
+    });
+};
 
 // Créez une route GET /api/users/:id qui renverra uniquement l'utilisateur de la base de données correspondant à l'identifiant défini dans l'url
 // S'il y a un utilisateur qui correspond aux paramètres, renvoie une réponse avec un statut 200 et l'utilisateur correspondant en tant qu'objet json
