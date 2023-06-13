@@ -80,9 +80,9 @@ const getUserById = (req, res) => {
 // Crée une route POST pour /api/users qui insérera un nouvel utilisateur dans la base de données
 
 const postUser = (req, res) => {
-  const { firstname, lastname, email, city, language } = req.body;
+  const { firstname, lastname, email, city, language, hashedPassword } = req.body;
   database
-    .query("INSERT INTO users (firstname, lastname, email, city, language) VALUES (?, ?, ?, ?, ?)", [firstname, lastname, email, city, language]
+    .query("INSERT INTO users (firstname, lastname, email, city, language, hashedPassword) VALUES (?, ?, ?, ?, ?, ?)", [firstname, lastname, email, city, language, hashedPassword]
     )
     .then(([result]) => {
       res.location(`/api/users/${result.insertId}`).sendStatus(201);
@@ -97,11 +97,11 @@ const postUser = (req, res) => {
 
 const updateUser = (req, res) => {
   const id = parseInt(req.params.id);
-  const { firstname, lastname, email, city, language } = req.body;
+  const { firstname, lastname, email, city, language, hashedPassword } = req.body;
 
   database
     .query(
-      "update users set firstname = ?, lastname = ?, email = ?, city = ?, language = ? where id = ?", [firstname, lastname, email, city, language, id]
+      "update users set firstname = ?, lastname = ?, email = ?, city = ?, language = ?, hashedPassword = ? where id = ?", [firstname, lastname, email, city, language, hashedPassword, id]
     )
     .then(([result]) => {
       if (result.affectedRows === 0) {
