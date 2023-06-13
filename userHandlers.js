@@ -19,7 +19,7 @@ const database = require("./database");
 // si un paramètre city est fourni dans l'URL (?city=Paris), ne renvoie que les utilisateurs dont la ville correspond au paramètre.
 
 const getUsers = (req, res) => {
-  const initialSql = "select * from users";
+  const initialSql = "select firstname, lastname, email, city, language from users";
   const where = [];
 
   if (req.query.language != null) {
@@ -63,7 +63,7 @@ const getUserById = (req, res) => {
     const id = parseInt(req.params.id);
   
     database
-      .query("select * from users where id = ?", [id])
+      .query("select firstname, lastname, email, city, language from users where id = ?", [id])
       .then(([users]) => {
         if (users[0] != null) {
           res.json(users[0]);
