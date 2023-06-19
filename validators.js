@@ -30,6 +30,9 @@ const validateMovie = (req, res, next) => {
     if (errors.length) {
         res.status(422).json({validationErrors: errors});
     }
+    else {
+        next();
+    }
   };
 
   const userSchema = Joi.object({
