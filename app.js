@@ -17,7 +17,8 @@ app.get("/", welcome);
 const movieHandlers = require("./movieHandlers");
 const userHandlers = require("./userHandlers");
 const { validateMovie, validateUser } = require("./validators.js");
-const { hashPassword, verifyPassword, verifyToken } = require("./auth.js");
+const { hashPassword, verifyPassword, verifyToken, verifyId } = require("./auth.js");
+const { verify } = require('jsonwebtoken');
 
 // The public routes
 app.get("/api/movies", movieHandlers.getMovies);
@@ -37,9 +38,9 @@ app.use(verifyToken);
 
 // The private routes
 app.post("/api/movies", verifyToken, validateMovie, movieHandlers.postMovie);
-app.put("/api/movies/:id", validateMovie, movieHandlers.updateMovie);
+app.put("/api/movies/:id", verifyId, validateMovie, movieHandlers.updateMovie);
 app.delete("/api/movies/:id", movieHandlers.deleteMovie);
-app.delete("/api/users/:id", userHandlers.deleteUser);
+app.delete("/api/users/:id", verifyId, userHandlers.deleteUser);
 
 app.listen(port, (err) => {
   if (err) {

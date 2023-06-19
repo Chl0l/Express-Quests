@@ -69,8 +69,24 @@ const verifyToken = (req, res, next) => {
   }
 };
 
+// PUT /api/users/:id et DELETE /api/users/:id ne devraient fonctionner que si l'id correspond à celui du payload du token (req.payload.sub). Si ce n'est pas le cas, réponds avec un statut 403 ("Forbidden").
+
+const verifyId = (req, res, next) => {
+  const id = parseInt(req.params.id);
+  try {
+    if(req.payload.sub !== id) {
+      throw new Error("You're not allowed!");
+    }
+    next();
+  } catch(err) {
+    console.error(err);
+    res.sendStatus(403);
+  }
+};
+
 module.exports = {
   hashPassword,
   verifyPassword,
   verifyToken,
+  verifyId,
 };
